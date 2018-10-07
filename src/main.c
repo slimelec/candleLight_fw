@@ -70,7 +70,13 @@ int main(void)
 	gpio_init();
 
 #if BOARD == BOARD_canable
-	led_init(&hLED, LED1_GPIO_Port, LED1_Pin, true, LED2_GPIO_Port, LED2_Pin, true);
+    for(uint8_t i=0; i<10; i++)
+    {
+        HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+        HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+        HAL_Delay(50);
+    }
+	led_init(&hLED, LED1_GPIO_Port, LED1_Pin, false, LED2_GPIO_Port, LED2_Pin, true);
 #else
 	led_init(&hLED, LED1_GPIO_Port, LED1_Pin, false, LED2_GPIO_Port, LED2_Pin, false);
 #endif

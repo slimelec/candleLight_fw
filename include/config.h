@@ -79,11 +79,11 @@ THE SOFTWARE.
 	// SILENT pin not connected
 
 	#define LED1_GPIO_Port GPIOB
-	#define LED1_Pin GPIO_PIN_0	/* green */
+	#define LED1_Pin GPIO_PIN_1	/* red */
 	#define LED1_Mode GPIO_MODE_OUTPUT_PP
 
 	#define LED2_GPIO_Port GPIOB
-	#define LED2_Pin GPIO_PIN_1	/* blue */
+	#define LED2_Pin GPIO_PIN_0	/* green */
 	#define LED2_Mode GPIO_MODE_OUTPUT_PP
 
 #elif BOARD == BOARD_usb2can
