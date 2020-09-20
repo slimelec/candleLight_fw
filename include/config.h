@@ -38,6 +38,9 @@ THE SOFTWARE.
 #define BOARD_cantact     2
 #define BOARD_canable     3
 #define BOARD_usb2can     4
+#define BOARD_ollie       5
+
+//#define BOARD		BOARD_ollie
 
 #if BOARD == BOARD_candleLight
 	#define USBD_PRODUCT_STRING_FS		(uint8_t*) "candleLight USB to CAN adapter"
@@ -112,6 +115,31 @@ THE SOFTWARE.
 	#define LED1_Pin GPIO_PIN_3	/* green */
 	#define LED1_Mode GPIO_MODE_OUTPUT_OD
 	#define LED1_Active_Low
-#else
+#elif BOARD==BOARD_ollie
+	#define USBD_PRODUCT_STRING_FS		(uint8_t*) "Ollie USB to CAN adapter"
+	#define USBD_MANUFACTURER_STRING	(uint8_t*) "slim"
+	#define DFU_INTERFACE_STRING_FS		(uint8_t*) "Ollie firmware upgrade interface"
+
+	#define OUTPUT_EN_5V_Pin 			GPIO_PIN_13
+	#define OUTPUT_EN_5V_GPIO_Port		GPIOC
+	#define OUTPUT_EN_3V3_Pin 			GPIO_PIN_14
+	#define OUTPUT_EN_3V3_GPIO_Port 	GPIOC
+	#define OUTPUT_EN_1V8_Pin 			GPIO_PIN_15
+	#define OUTPUT_EN_1V8_GPIO_Port 	GPIOC
+	#define SW1_Pin 					GPIO_PIN_2
+	#define SW1_GPIO_Port 				GPIOA
+	#define LED_5V_Pin 					GPIO_PIN_5
+	#define LED_5V_GPIO_Port 			GPIOA
+	#define LED_3V3_Pin 				GPIO_PIN_6
+	#define LED_3V3_GPIO_Port 			GPIOA
+	#define LED_1V8_Pin 				GPIO_PIN_7
+	#define LED_1V8_GPIO_Port 			GPIOA
+	#define VS_5V_Pin 					GPIO_PIN_6
+	#define VS_5V_GPIO_Port 			GPIOB
+	#define VS_3V3_Pin 					GPIO_PIN_5
+	#define VS_3V3_GPIO_Port 			GPIOB
+	#define VS_1V8_Pin 					GPIO_PIN_4
+	#define VS_1V8_GPIO_Port 			GPIOB
+	#else
 	#error please define BOARD
 #endif

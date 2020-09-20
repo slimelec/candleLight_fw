@@ -15,7 +15,7 @@ MEMORY
 {
   FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 32K
   DATA (rwx) : ORIGIN = 0x08007800, LENGTH = 2K
-  RAM (xrw) : ORIGIN = 0x20000000, LENGTH = 6K
+  RAM (xrw) : ORIGIN = 0x200000C0, LENGTH = 6K - 192
 
   /*
    * Optional sections; define the origin and length to match

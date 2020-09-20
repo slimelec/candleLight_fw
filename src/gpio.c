@@ -34,7 +34,39 @@ void gpio_init()
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_GPIOC_CLK_ENABLE();
+#if BOARD == BOARD_ollie
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOC, OUTPUT_EN_5V_Pin|OUTPUT_EN_3V3_Pin|OUTPUT_EN_1V8_Pin, GPIO_PIN_RESET);
 
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOA, LED_5V_Pin|LED_3V3_Pin|LED_1V8_Pin, GPIO_PIN_RESET);
+
+	/*Configure GPIO pins : OUTPUT_EN_5V_Pin OUTPUT_EN_3V3_Pin OUTPUT_EN_1V8_Pin */
+	GPIO_InitStruct.Pin = OUTPUT_EN_5V_Pin|OUTPUT_EN_3V3_Pin|OUTPUT_EN_1V8_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : SW1_Pin */
+	GPIO_InitStruct.Pin = SW1_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(SW1_GPIO_Port, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : LED_5V_Pin LED_3V3_Pin LED_1V8_Pin */
+	GPIO_InitStruct.Pin = LED_5V_Pin|LED_3V3_Pin|LED_1V8_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : VS_5V_Pin VS_3V3_Pin VS_1V8_Pin */
+	GPIO_InitStruct.Pin = VS_5V_Pin|VS_3V3_Pin|VS_1V8_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+#else
 #ifdef CAN_S_Pin
 	HAL_GPIO_WritePin(CAN_S_GPIO_Port, CAN_S_Pin, GPIO_PIN_SET);
 	GPIO_InitStruct.Pin = CAN_S_Pin;
@@ -65,5 +97,6 @@ void gpio_init()
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(LED2_GPIO_Port, &GPIO_InitStruct);
+#endif
 
 }

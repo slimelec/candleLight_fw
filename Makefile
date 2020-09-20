@@ -32,8 +32,8 @@ DEP     += $(ASM_OBJ:%.asmo=%.d)
 ELF = build/$(BOARD)/gsusb_$(BOARD).elf
 BIN = bin/gsusb_$(BOARD).bin
 
-all: candleLight cantact canable usb2can
-
+#all: ollie candleLight cantact canable usb2can
+all: ollie
 .PHONY : clean all
 
 clean:
@@ -41,6 +41,13 @@ clean:
 	$(MAKE) BOARD=cantact board-clean
 	$(MAKE) BOARD=canable board-clean
 	$(MAKE) BOARD=usb2can board-clean
+	$(MAKE) BOARD=ollie board-clean
+
+ollie:
+	$(MAKE) CHIP=STM32F042x6 BOARD=ollie bin
+
+flash-ollie:
+	$(MAKE) CHIP=STM32F042x6 BOARD=ollie board-flash
 
 candleLight:
 	$(MAKE) CHIP=STM32F042x6 BOARD=candleLight bin

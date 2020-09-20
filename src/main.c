@@ -47,6 +47,47 @@ void SystemClock_Config(void);
 static bool send_to_host_or_enqueue(struct gs_host_frame *frame);
 static void send_to_host();
 
+#if BOARD == BOARD_ollie
+//Refernce openBlt
+#define CPU_USER_PROGRAM_RAM_BASEADDR     	((unsigned long)(0x20000000))
+#define CPU_USER_PROGRAM_VECTABLE_SIZE    	(0xC0u)
+#define JUMP_ADDRESS                        (unsigned long)(0x8003D00)
+#define CPU_USER_PROGRAM_STARTADDR_PTR      ((unsigned long)(JUMP_ADDRESS + 0x00000004))
+
+static void fw_config(void);
+
+static void CpuMemCopy(unsigned long dest, unsigned long src, unsigned short len)
+{
+	unsigned char *from, *to;
+
+  /* set casted pointers */
+  from = (unsigned char *)src;
+  to = (unsigned char *)dest;
+
+  /* copy all bytes from source address to destination address */
+  while (len-- > 0)
+  {
+    /* store byte value from source to destination */
+    *to++ = *from++;
+  }
+} /*** end of CpuMemCopy ***/
+
+__STATIC_INLINE void EnableClock(uint32_t Periphs)
+{
+  __IO uint32_t tmpreg;
+  SET_BIT(RCC->APB2ENR, Periphs);
+  /* Delay after an RCC peripheral clock enabling */
+  tmpreg = READ_BIT(RCC->APB2ENR, Periphs);
+  (void)tmpreg;
+}
+
+__STATIC_INLINE void LL_SYSCFG_SetRemapMemory(uint32_t Memory)
+{
+  MODIFY_REG(SYSCFG->CFGR1, SYSCFG_CFGR1_MEM_MODE, Memory);
+}
+
+#endif
+
 can_data_t hCAN;
 USBD_HandleTypeDef hUSB;
 led_data_t hLED;
@@ -69,6 +110,7 @@ int main(void)
 
 	gpio_init();
 
+	fw_config();
 #if BOARD == BOARD_canable
     for(uint8_t i=0; i<10; i++)
     {
@@ -77,6 +119,8 @@ int main(void)
         HAL_Delay(50);
     }
 	led_init(&hLED, LED1_GPIO_Port, LED1_Pin, false, LED2_GPIO_Port, LED2_Pin, true);
+#elif BOARD == BOARD_ollie
+//Do nothing
 #else
 	led_init(&hLED, LED1_GPIO_Port, LED1_Pin, false, LED2_GPIO_Port, LED2_Pin, false);
 #endif
@@ -247,4 +291,45 @@ void send_to_host()
 	        queue_push_front(q_to_host, frame);
 	}
 }
+
+#if BOARD == BOARD_ollie
+static void fw_config(void)
+{
+	if(HAL_GPIO_ReadPin(VS_5V_GPIO_Port, VS_5V_Pin) == GPIO_PIN_RESET)
+	{
+		HAL_GPIO_WritePin(LED_5V_GPIO_Port, LED_5V_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(OUTPUT_EN_5V_GPIO_Port, OUTPUT_EN_5V_Pin, GPIO_PIN_SET);
+	}
+	else if(HAL_GPIO_ReadPin(VS_3V3_GPIO_Port, VS_3V3_Pin) == GPIO_PIN_RESET)
+	{
+		HAL_GPIO_WritePin(LED_3V3_GPIO_Port, LED_3V3_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(OUTPUT_EN_3V3_GPIO_Port, OUTPUT_EN_3V3_Pin, GPIO_PIN_SET);
+	}
+	else if(HAL_GPIO_ReadPin(VS_1V8_GPIO_Port, VS_1V8_Pin) == GPIO_PIN_RESET)
+	{
+		HAL_GPIO_WritePin(LED_1V8_GPIO_Port, LED_1V8_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(OUTPUT_EN_1V8_GPIO_Port, OUTPUT_EN_1V8_Pin, GPIO_PIN_SET);
+	}
+
+	if(HAL_GPIO_ReadPin(SW1_GPIO_Port, SW1_Pin))
+	{
+		void (*pProgResetHandler)(void);
+
+		SysTick->CTRL = 0;
+
+		HAL_DeInit();
+
+		EnableClock((SYSCFG_CFGR1_MEM_MODE_1 | SYSCFG_CFGR1_MEM_MODE_0));
+
+		CpuMemCopy(CPU_USER_PROGRAM_RAM_BASEADDR, JUMP_ADDRESS,CPU_USER_PROGRAM_VECTABLE_SIZE);
+
+		MODIFY_REG(SYSCFG->CFGR1, SYSCFG_CFGR1_MEM_MODE, SYSCFG_CFGR1_MEM_MODE_1 | SYSCFG_CFGR1_MEM_MODE_0);
+
+		pProgResetHandler = (void(*)(void))(*((unsigned long *)CPU_USER_PROGRAM_STARTADDR_PTR));
+
+		pProgResetHandler();
+	}
+
+}
+#endif
 
