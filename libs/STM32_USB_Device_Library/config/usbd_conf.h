@@ -24,35 +24,15 @@ THE SOFTWARE.
 
 */
 
-#include <util.h>
+#pragma once
 
-inline int disable_irq(void) {
-	int primask;
-	asm volatile("mrs %0, PRIMASK\n"
-				"cpsid i\n" : "=r"(primask));
-	return primask & 1;
-}
+#include "stm32f0xx_hal.h"
 
-inline void enable_irq(int primask) {
-	if (!primask)
-		asm volatile("cpsie i\n");
-}
+#define USBD_MAX_NUM_INTERFACES      1
+#define USBD_MAX_NUM_CONFIGURATION   1
+#define USBD_MAX_STR_DESC_SIZ      512
+#define USBD_SUPPORT_USER_STRING     1
+#define USBD_SELF_POWERED            0
+#define DEVICE_FS                    0
 
-void hex32(char *out, uint32_t val)
-{
-	char *p = out + 8;
-
-	*p-- = 0;
-
-	while (p >= out) {
-		uint8_t nybble = val & 0x0F;
-
-		if (nybble < 10)
-			*p = '0' + nybble;
-		else
-			*p = 'A' + nybble - 10;
-
-		val >>= 4;
-		p--;
-	}
-}
+#define USBD_ErrLog(...)
